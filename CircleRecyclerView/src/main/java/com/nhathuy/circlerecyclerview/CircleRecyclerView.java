@@ -1,7 +1,9 @@
 package com.nhathuy.circlerecyclerview;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -25,6 +27,11 @@ public class CircleRecyclerView extends RecyclerView {
     private double angleStep;
     private boolean isExpanded = false;
     private final OvershootInterpolator overshootInterpolator = new OvershootInterpolator(1.5f);
+
+    // variables for touch handling
+    private float lastTouchX, lastTouchY;
+    private float currentRotation = 0f;
+
 
     public CircleRecyclerView(@NonNull Context context) {
         super(context);
@@ -78,6 +85,42 @@ public class CircleRecyclerView extends RecyclerView {
                 .start();
     }
 
+    // handle touch event
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        switch (e.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                lastTouchX = e.getX();
+                lastTouchY = e.getY();
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                float deltaX = e.getX() - lastTouchX;
+                float deltaY = e.getY() - lastTouchY;
+
+                // Calculate the angle of rotation based on touch movement
+                float angle = calculateRotationAngle(deltaX, deltaY);
+                currentRotation += angle;
+
+                // Request layout with new rotation
+                requestLayout();
+
+                lastTouchX = e.getX();
+                lastTouchY = e.getY();
+                return true;
+            case MotionEvent.ACTION_UP:
+                ((CircleLayoutManager) getLayoutManager()).applyScrollPhysics();
+                return true;
+        }
+        return super.onTouchEvent(e);
+    }
+    // Calculate the rotation angle based on touch movement
+    private float calculateRotationAngle(float deltaX, float deltaY) {
+        // Calculate rotation based on movement relative to center
+        float touchAngle = (float) Math.toDegrees(Math.atan2(deltaY, deltaX));
+        // Convert to radians and normalize
+        return (float) Math.toRadians(touchAngle) * 0.5f; // Adjust multiplier for sensitivity
+    }
+
     private class CircleLayoutManager extends LayoutManager {
         @Override
         public RecyclerView.LayoutParams generateDefaultLayoutParams() {
@@ -100,9 +143,13 @@ public class CircleRecyclerView extends RecyclerView {
                 View view = recycler.getViewForPosition(i);
                 addView(view);
 
-                float angle = (float) (i * angleStep - Math.PI / 2); // Start from top
-                float x = (float) (centerX + radius * Math.cos(angle));
-                float y = (float) (centerY + radius * Math.sin(angle));
+                // Start from top
+                float baseAngle = (float) (i * angleStep - Math.PI / 2);
+                float rotatedAngle = baseAngle + currentRotation;
+
+
+                float x = (float) (centerX + radius * Math.cos(rotatedAngle));
+                float y = (float) (centerY + radius * Math.sin(rotatedAngle));
 
                 measureChildWithMargins(view, 0, 0);
                 int width = getDecoratedMeasuredWidth(view);
@@ -114,7 +161,9 @@ public class CircleRecyclerView extends RecyclerView {
                         (int) (x + width / 2),
                         (int) (y + height / 2));
 
-                animateItemView(view, i);
+                if (view.getScaleX() == 0f) {
+                    animateItemView(view, i);
+                }
             }
         }
 
@@ -131,6 +180,18 @@ public class CircleRecyclerView extends RecyclerView {
                     .setStartDelay(position * 50)
                     .setInterpolator(overshootInterpolator)
                     .start();
+        }
+
+        // Add method to handle circular scrolling physics
+        private void applyScrollPhysics() {
+            ValueAnimator momentum = ValueAnimator.ofFloat(currentRotation, currentRotation + 0.5f);
+            momentum.setDuration(300);
+            momentum.setInterpolator(new DecelerateInterpolator());
+            momentum.addUpdateListener(animation -> {
+                currentRotation = (float) animation.getAnimatedValue();
+                requestLayout();
+            });
+            momentum.start();
         }
     }
 }
