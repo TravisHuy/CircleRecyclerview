@@ -1,5 +1,8 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
+    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -39,4 +42,19 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = 'com.github.TravisHuy'
+                artifactId = 'CircleRecyclerView'
+                version = '0.1.0'
+            }
+        }
+    }
 }
