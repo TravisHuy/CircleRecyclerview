@@ -41,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         circleRecyclerView.setAdapter(adapter);
+        floorsButton.setCircleRecyclerView(circleRecyclerView);
+
+        // Set initial center position
+        floorsButton.post(() -> {
+            float initialCenterX = floorsButton.getX() + floorsButton.getWidth() / 2;
+            float initialCenterY = floorsButton.getY() + floorsButton.getHeight() / 2;
+            circleRecyclerView.setCenterPosition(initialCenterX, initialCenterY);
+        });
 
         floorsButton.setOnClickListener(v -> {
             circleRecyclerView.toggleVisibility();

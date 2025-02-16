@@ -35,6 +35,9 @@ public class TravisHuyButton extends AppCompatButton {
      */
     private OnClickListener clickListener;
 
+    private CircleRecyclerView circleRecyclerView;
+
+
     public TravisHuyButton(Context context) {
         super(context);
     }
@@ -77,6 +80,16 @@ public class TravisHuyButton extends AppCompatButton {
                 // update the button's position
                 setX(newX);
                 setY(newY);
+
+                // Update CircleRecyclerView center position
+                if (circleRecyclerView != null) {
+                    // Calculate the center of the button
+                    float centerX = newX + getWidth() / 2;
+                    float centerY = newY + getHeight() / 2;
+                    circleRecyclerView.setCenterPosition(centerX, centerY);
+                }
+
+
                 // Mark as dragging to differentiate from click events.
                 isDragging = true;
 
@@ -100,5 +113,9 @@ public class TravisHuyButton extends AppCompatButton {
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
         this.clickListener = l;
+    }
+
+    public void setCircleRecyclerView(CircleRecyclerView recyclerView) {
+        this.circleRecyclerView = recyclerView;
     }
 }
