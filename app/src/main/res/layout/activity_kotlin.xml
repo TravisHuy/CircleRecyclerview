@@ -15,5 +15,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <!-- RecyclerView hình tròn -->
+    <com.nhathuy.circlerecyclerview.CircleRecyclerView
+        android:id="@+id/circle_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/travis_huy_btn"
+        app:layout_constraintEnd_toEndOf="@+id/travis_huy_btn"
+        app:layout_constraintStart_toStartOf="@+id/travis_huy_btn"
+        app:layout_constraintTop_toTopOf="@+id/travis_huy_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

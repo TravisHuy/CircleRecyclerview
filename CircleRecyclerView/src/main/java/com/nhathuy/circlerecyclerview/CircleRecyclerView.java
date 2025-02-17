@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @since 16.02.2025
  * @author TravisHuy
  */
-public class CircleRecyclerView extends RecyclerView {
+public class CircleRecyclerView extends RecyclerView implements CircleRecyclerViewInterface{
     private float centerX;
     private float centerY;
     private float radius = 300f; // Default radius
@@ -48,13 +48,13 @@ public class CircleRecyclerView extends RecyclerView {
         setVisibility(VISIBLE);
         setAlpha(0f);
     }
-
+    @Override
     public void setCenterPosition(float x, float y) {
         this.centerX = x;
         this.centerY = y;
         requestLayout();
     }
-
+    @Override
     public void toggleVisibility() {
         if (isExpanded) {
             collapse();
@@ -63,7 +63,8 @@ public class CircleRecyclerView extends RecyclerView {
         }
     }
 
-    private void expand() {
+    @Override
+    public void expand() {
         setVisibility(VISIBLE);
         animate()
                 .alpha(1f)
@@ -73,7 +74,8 @@ public class CircleRecyclerView extends RecyclerView {
         isExpanded = true;
     }
 
-    private void collapse() {
+    @Override
+    public void collapse() {
         animate()
                 .alpha(0f)
                 .setDuration(300)
@@ -119,6 +121,38 @@ public class CircleRecyclerView extends RecyclerView {
         float touchAngle = (float) Math.toDegrees(Math.atan2(deltaY, deltaX));
         // Convert to radians and normalize
         return (float) Math.toRadians(touchAngle) * 0.5f; // Adjust multiplier for sensitivity
+    }
+
+    @Override
+    public float getCurrentRotation() {
+        return currentRotation;
+    }
+
+    @Override
+    public void setCurrentRotation(float rotation) {
+        this.currentRotation = rotation;
+        requestLayout();
+    }
+
+    @Override
+    public float getRadius() {
+        return radius;
+    }
+
+    @Override
+    public void setRadius(float radius) {
+        this.radius = radius;
+        requestLayout();
+    }
+
+    @Override
+    public boolean isExpanded() {
+        return isExpanded;
+    }
+
+    @Override
+    public void setExpanded(boolean expanded) {
+        isExpanded = expanded;
     }
 
     private class CircleLayoutManager extends LayoutManager {
