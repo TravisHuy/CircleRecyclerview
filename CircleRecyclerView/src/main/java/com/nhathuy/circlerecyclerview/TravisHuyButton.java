@@ -8,6 +8,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 
+import kotlin.jvm.JvmField;
+
 /**
  *
  * This class represents a button that can move on the screen
@@ -16,7 +18,7 @@ import androidx.appcompat.widget.AppCompatButton;
  * @since 15.02.2025
  * @author TravisHuy
  */
-public class TravisHuyButton extends AppCompatButton {
+public class TravisHuyButton extends AppCompatButton implements TravisHuyButtonInterface{
 
     /**
      * The distance between the left edge of the button and the touch point
@@ -117,5 +119,15 @@ public class TravisHuyButton extends AppCompatButton {
 
     public void setCircleRecyclerView(CircleRecyclerView recyclerView) {
         this.circleRecyclerView = recyclerView;
+    }
+
+    @Override
+    public boolean isDragging() {
+        return isDragging;
+    }
+
+    @Override
+    public void setDragging(boolean value) {
+        isDragging = value;
     }
 }
